@@ -3,7 +3,7 @@ import argparse
 import numpy as np
 from PIL import Image
 from pathlib import Path
-from shims import tqdm
+from wilds.shims import tqdm
 
 def main():
 

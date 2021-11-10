@@ -1,5 +1,5 @@
 import os
-from shims import tqdm
+from wilds.shims import tqdm
 import torch
 from utils import save_model, save_pred, get_pred_prefix, get_model_prefix, detach_and_clone, collate_list
 from configs.supported import process_outputs_functions

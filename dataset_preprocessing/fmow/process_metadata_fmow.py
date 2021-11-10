@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 import numpy as np
 import pandas as pd
-from shims import tqdm
+from wilds.shims import tqdm
 from torchvision import transforms
 from wilds.datasets.fmow_dataset import categories
 from PIL import Image

@@ -11,7 +11,7 @@ import tarfile
 import datetime
 import pytz
 from PIL import Image
-from shims import tqdm
+from wilds.shims import tqdm
 from wilds.common.utils import subsample_idxs
 from wilds.common.metrics.all_metrics import Accuracy
 from wilds.common.grouper import CombinatorialGrouper
