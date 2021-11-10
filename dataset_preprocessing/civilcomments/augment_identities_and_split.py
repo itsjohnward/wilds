@@ -2,7 +2,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import os,sys
 import numpy as np
-from tqdm import tqdm
+from shims import tqdm
 import argparse
 
 from attr_definitions import GROUP_ATTRS, AGGREGATE_ATTRS, ORIG_ATTRS

@@ -8,7 +8,7 @@ import pandas as pd
 import os
 import csv
 import argparse
-from tqdm import tqdm
+from shims import tqdm
 
 from xml.etree.ElementTree import parse
 from PIL import Image

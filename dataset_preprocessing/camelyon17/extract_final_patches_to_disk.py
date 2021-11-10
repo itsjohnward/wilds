@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 import random
-from tqdm import tqdm
+from shims import tqdm
 from generate_all_patch_coords import PATCH_LEVEL, MASK_LEVEL, CENTER_SIZE
 
 def write_patch_images_from_df(slide_root, output_root):

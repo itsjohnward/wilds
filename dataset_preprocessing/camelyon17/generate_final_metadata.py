@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 import argparse
 import os,sys
 import numpy as np
-from tqdm import tqdm
+from shims import tqdm
 from collections import defaultdict
 
 def generate_final_metadata(output_root):

@@ -5,7 +5,7 @@ import tensorflow as tf
 import numpy as np
 import batcher
 import dataset_constants
-from tqdm import tqdm
+from shims import tqdm
 
 FOLDS = ['A', 'B', 'C', 'D', 'E']
 SPLITS = ['train', 'val', 'test']

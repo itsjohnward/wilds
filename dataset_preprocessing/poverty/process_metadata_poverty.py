@@ -6,7 +6,7 @@ import tensorflow as tf
 import numpy as np
 import batcher
 import dataset_constants
-from tqdm import tqdm
+from shims import tqdm
 from utils.general import load_npz
 import pickle
 import pandas as pd

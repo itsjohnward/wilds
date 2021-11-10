@@ -1,7 +1,7 @@
 import argparse, time
 import numpy as np
 
-from tqdm import tqdm
+from shims import tqdm
 
 # Sequence preprocessing. Code adapted from Jacob Schreiber.
 

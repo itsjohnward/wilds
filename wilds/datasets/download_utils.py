@@ -46,7 +46,7 @@ from typing import Any, Callable, List, Iterable, Optional, TypeVar
 import zipfile
 
 import torch
-from torch.utils.model_zoo import tqdm
+from shims import tqdm
 
 
 def gen_bar_updater(total) -> Callable[[int, int, int], None]:
