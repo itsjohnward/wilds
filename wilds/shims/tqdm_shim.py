@@ -10,7 +10,7 @@ class TqdmMock:
         pass
 
 def tqdm_shim(*args, **kwargs):
-    if os.environ['DISABLE_TQDM']:
+    if os.environ.get('DISABLE_TQDM'):
         if len(args) > 0:
             return args[0]
         else:
