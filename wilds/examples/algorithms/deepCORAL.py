@@ -1,6 +1,6 @@
 import torch
-from models.initializer import initialize_model
-from algorithms.single_model_algorithm import SingleModelAlgorithm
+from ..models.initializer import initialize_model
+from .single_model_algorithm import SingleModelAlgorithm
 from wilds.common.utils import split_into_groups
 
 class DeepCORAL(SingleModelAlgorithm):
@@ -23,14 +23,14 @@ class DeepCORAL(SingleModelAlgorithm):
     """
     def __init__(self, config, d_out, grouper, loss, metric, n_train_steps):
         # check config
-        assert config.train_loader == 'group'
-        assert config.uniform_over_groups
-        assert config.distinct_groups
+        assert config.get('train_loader') == 'group'
+        assert config.get('uniform_over_groups')
+        assert config.get('distinct_groups')
         # initialize models
         featurizer, classifier = initialize_model(config, d_out=d_out, is_featurizer=True)
-        featurizer = featurizer.to(config.device)
-        classifier = classifier.to(config.device)
-        model = torch.nn.Sequential(featurizer, classifier).to(config.device)
+        featurizer = featurizer.to(config.get('device'))
+        classifier = classifier.to(config.get('device'))
+        model = torch.nn.Sequential(featurizer, classifier).to(config.get('device'))
         # initialize module
         super().__init__(
             config=config,
@@ -41,7 +41,7 @@ class DeepCORAL(SingleModelAlgorithm):
             n_train_steps=n_train_steps,
         )
         # algorithm hyperparameters
-        self.penalty_weight = config.coral_penalty_weight
+        self.penalty_weight = config.get('coral_penalty_weight')
         # additional logging
         self.logged_fields.append('penalty')
         # set model components

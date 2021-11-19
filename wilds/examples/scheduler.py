@@ -4,35 +4,35 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR, MultiStepLR
 
 def initialize_scheduler(config, optimizer, n_train_steps):
     # construct schedulers
-    if config.scheduler is None:
+    if config.get('scheduler') is None:
         return None
-    elif config.scheduler=='linear_schedule_with_warmup':
+    elif config.get('scheduler')=='linear_schedule_with_warmup':
         scheduler = get_linear_schedule_with_warmup(
             optimizer,
             num_training_steps=n_train_steps,
-            **config.scheduler_kwargs)
+            **config.get('scheduler_kwargs'))
         step_every_batch = True
         use_metric = False
-    elif config.scheduler == 'cosine_schedule_with_warmup':
+    elif config.get('scheduler') == 'cosine_schedule_with_warmup':
         scheduler = get_cosine_schedule_with_warmup(
             optimizer,
             num_training_steps=n_train_steps,
-            **config.scheduler_kwargs)
+            **config.get('scheduler_kwargs'))
         step_every_batch = True
         use_metric = False
-    elif config.scheduler=='ReduceLROnPlateau':
-        assert config.scheduler_metric_name, f'scheduler metric must be specified for {config.scheduler}'
+    elif config.get('scheduler')=='ReduceLROnPlateau':
+        assert config.get('scheduler_metric_name'), f'scheduler metric must be specified for {config.get("scheduler")}'
         scheduler = ReduceLROnPlateau(
             optimizer,
-            **config.scheduler_kwargs)
+            **config.get('scheduler_kwargs'))
         step_every_batch = False
         use_metric = True
-    elif config.scheduler == 'StepLR':
-        scheduler = StepLR(optimizer, **config.scheduler_kwargs)
+    elif config.get('scheduler') == 'StepLR':
+        scheduler = StepLR(optimizer, **config.get('scheduler_kwargs'))
         step_every_batch = False
         use_metric = False
-    elif config.scheduler == 'MultiStepLR':
-        scheduler = MultiStepLR(optimizer, **config.scheduler_kwargs)
+    elif config.get('scheduler') == 'MultiStepLR':
+        scheduler = MultiStepLR(optimizer, **config.get('scheduler_kwargs'))
         step_every_batch = False
         use_metric = False
     else:

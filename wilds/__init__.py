@@ -1,5 +1,7 @@
 from .version import __version__
 from .get_dataset import get_dataset
+from . import examples
+from . import dataset_preprocessing
 
 benchmark_datasets = [
     'amazon',

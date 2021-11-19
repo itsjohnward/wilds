@@ -1,10 +1,10 @@
 from wilds.common.utils import get_counts
-from algorithms.ERM import ERM
-from algorithms.groupDRO import GroupDRO
-from algorithms.deepCORAL import DeepCORAL
-from algorithms.IRM import IRM
-from configs.supported import algo_log_metrics
-from losses import initialize_loss
+from .ERM import ERM
+from .groupDRO import GroupDRO
+from .deepCORAL import DeepCORAL
+from .IRM import IRM
+from ..configs.supported import algo_log_metrics
+from ..losses import initialize_loss
 
 def initialize_algorithm(config, datasets, train_grouper):
     train_dataset = datasets['train']['dataset']
@@ -26,18 +26,18 @@ def initialize_algorithm(config, datasets, train_grouper):
     elif train_dataset.is_detection:
         # For detection, d_out is the number of classes
         d_out = train_dataset.n_classes
-        if config.algorithm in ['deepCORAL', 'IRM']:
-            raise ValueError(f'{config.algorithm} is not currently supported for detection datasets.')
+        if config.get('algorithm') in ['deepCORAL', 'IRM']:
+            raise ValueError(f'{config.get("algorithm")} is not currently supported for detection datasets.')
     else:
         # For regression, we have one output per target dimension
         d_out = train_dataset.y_size
 
     # Other config
-    n_train_steps = len(train_loader) * config.n_epochs
+    n_train_steps = len(train_loader) * config.get('n_epochs')
     loss = initialize_loss(config, d_out)
-    metric = algo_log_metrics[config.algo_log_metric]
+    metric = algo_log_metrics[config.get('algo_log_metric')]
 
-    if config.algorithm == 'ERM':
+    if config.get('algorithm') == 'ERM':
         algorithm = ERM(
             config=config,
             d_out=d_out,
@@ -45,7 +45,7 @@ def initialize_algorithm(config, datasets, train_grouper):
             loss=loss,
             metric=metric,
             n_train_steps=n_train_steps)
-    elif config.algorithm == 'groupDRO':
+    elif config.get('algorithm') == 'groupDRO':
         train_g = train_grouper.metadata_to_group(train_dataset.metadata_array)
         is_group_in_train = get_counts(train_g, train_grouper.n_groups) > 0
         algorithm = GroupDRO(
@@ -56,7 +56,7 @@ def initialize_algorithm(config, datasets, train_grouper):
             metric=metric,
             n_train_steps=n_train_steps,
             is_group_in_train=is_group_in_train)
-    elif config.algorithm == 'deepCORAL':
+    elif config.get('algorithm') == 'deepCORAL':
         algorithm = DeepCORAL(
             config=config,
             d_out=d_out,
@@ -64,7 +64,7 @@ def initialize_algorithm(config, datasets, train_grouper):
             loss=loss,
             metric=metric,
             n_train_steps=n_train_steps)
-    elif config.algorithm == 'IRM':
+    elif config.get('algorithm') == 'IRM':
         algorithm = IRM(
             config=config,
             d_out=d_out,
@@ -73,6 +73,6 @@ def initialize_algorithm(config, datasets, train_grouper):
             metric=metric,
             n_train_steps=n_train_steps)
     else:
-        raise ValueError(f"Algorithm {config.algorithm} not recognized")
+        raise ValueError(f"Algorithm {config.get('algorithm')} not recognized")
 
     return algorithm

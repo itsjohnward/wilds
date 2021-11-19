@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from models.layers import Identity
+from .layers import Identity
 
 def initialize_model(config, d_out, is_featurizer=False):
     """
@@ -18,21 +18,21 @@ def initialize_model(config, d_out, is_featurizer=False):
             If is_featurizer=False:
             - model: a model that is equivalent to nn.Sequential(featurizer, classifier)
     """
-    if config.model in ('resnet50', 'resnet34', 'resnet18', 'wideresnet50', 'densenet121'):
+    if config.get('model') in ('resnet50', 'resnet34', 'resnet18', 'wideresnet50', 'densenet121'):
         if is_featurizer:
             featurizer = initialize_torchvision_model(
-                name=config.model,
+                name=config.get('model'),
                 d_out=None,
-                **config.model_kwargs)
+                **config.get('model_kwargs'))
             classifier = nn.Linear(featurizer.d_out, d_out)
             model = (featurizer, classifier)
         else:
             model = initialize_torchvision_model(
-                name=config.model,
+                name=config.get('model'),
                 d_out=d_out,
-                **config.model_kwargs)
+                **config.get('model_kwargs'))
 
-    elif 'bert' in config.model:
+    elif 'bert' in config.get('model'):
         if is_featurizer:
             featurizer = initialize_bert_based_model(config, d_out, is_featurizer)
             classifier = nn.Linear(featurizer.d_out, d_out)
@@ -40,25 +40,25 @@ def initialize_model(config, d_out, is_featurizer=False):
         else:
             model = initialize_bert_based_model(config, d_out)
 
-    elif config.model == 'resnet18_ms':  # multispectral resnet 18
+    elif config.get('model') == 'resnet18_ms':  # multispectral resnet 18
         from models.resnet_multispectral import ResNet18
         if is_featurizer:
-            featurizer = ResNet18(num_classes=None, **config.model_kwargs)
+            featurizer = ResNet18(num_classes=None, **config.get('model_kwargs'))
             classifier = nn.Linear(featurizer.d_out, d_out)
             model = (featurizer, classifier)
         else:
-            model = ResNet18(num_classes=d_out, **config.model_kwargs)
+            model = ResNet18(num_classes=d_out, **config.get('model_kwargs'))
 
-    elif config.model == 'gin-virtual':
+    elif config.get('model') == 'gin-virtual':
         from models.gnn import GINVirtual
         if is_featurizer:
-            featurizer = GINVirtual(num_tasks=None, **config.model_kwargs)
+            featurizer = GINVirtual(num_tasks=None, **config.get('model_kwargs'))
             classifier = nn.Linear(featurizer.d_out, d_out)
             model = (featurizer, classifier)
         else:
-            model = GINVirtual(num_tasks=d_out, **config.model_kwargs)
+            model = GINVirtual(num_tasks=d_out, **config.get('model_kwargs'))
 
-    elif config.model == 'code-gpt-py':
+    elif config.get('model') == 'code-gpt-py':
         from models.code_gpt import GPT2LMHeadLogit, GPT2FeaturizerLMHeadLogit
         from transformers import GPT2Tokenizer
         name = 'microsoft/CodeGPT-small-py'
@@ -73,19 +73,19 @@ def initialize_model(config, d_out, is_featurizer=False):
             model = GPT2LMHeadLogit.from_pretrained(name)
             model.resize_token_embeddings(len(tokenizer))
 
-    elif config.model == 'logistic_regression':
+    elif config.get('model') == 'logistic_regression':
         assert not is_featurizer, "Featurizer not supported for logistic regression"
-        model = nn.Linear(out_features=d_out, **config.model_kwargs)
-    elif config.model == 'unet-seq':
+        model = nn.Linear(out_features=d_out, **config.get('model_kwargs'))
+    elif config.get('model') == 'unet-seq':
         from models.CNN_genome import UNet
         if is_featurizer:
-            featurizer = UNet(num_tasks=None, **config.model_kwargs)
+            featurizer = UNet(num_tasks=None, **config.get('model_kwargs'))
             classifier = nn.Linear(featurizer.d_out, d_out)
             model = (featurizer, classifier)
         else:
-            model = UNet(num_tasks=d_out, **config.model_kwargs)
+            model = UNet(num_tasks=d_out, **config.get('model_kwargs'))
 
-    elif config.model == 'fasterrcnn':
+    elif config.get('model') == 'fasterrcnn':
         if is_featurizer: # TODO
             raise NotImplementedError('Featurizer not implemented for detection yet')
         else:
@@ -93,7 +93,7 @@ def initialize_model(config, d_out, is_featurizer=False):
         model.needs_y = True
 
     else:
-        raise ValueError(f'Model: {config.model} not recognized.')
+        raise ValueError(f'Model: {config.get("model")} not recognized.')
 
     # The `needs_y` attribute specifies whether the model's forward function
     # needs to take in both (x, y).
@@ -115,24 +115,24 @@ def initialize_bert_based_model(config, d_out, is_featurizer=False):
     from models.bert.bert import BertClassifier, BertFeaturizer
     from models.bert.distilbert import DistilBertClassifier, DistilBertFeaturizer
 
-    if config.model == 'bert-base-uncased':
+    if config.get('model') == 'bert-base-uncased':
         if is_featurizer:
-            model = BertFeaturizer.from_pretrained(config.model, **config.model_kwargs)
+            model = BertFeaturizer.from_pretrained(config.get('model'), **config.get('model_kwargs'))
         else:
             model = BertClassifier.from_pretrained(
-                config.model,
+                config.get('model'),
                 num_labels=d_out,
-                **config.model_kwargs)
-    elif config.model == 'distilbert-base-uncased':
+                **config.get('model_kwargs'))
+    elif config.get('model') == 'distilbert-base-uncased':
         if is_featurizer:
-            model = DistilBertFeaturizer.from_pretrained(config.model, **config.model_kwargs)
+            model = DistilBertFeaturizer.from_pretrained(config.get('model'), **config.get('model_kwargs'))
         else:
             model = DistilBertClassifier.from_pretrained(
-                config.model,
+                config.get('model'),
                 num_labels=d_out,
-                **config.model_kwargs)
+                **config.get('model_kwargs'))
     else:
-        raise ValueError(f'Model: {config.model} not recognized.')
+        raise ValueError(f'Model: {config.get("model")} not recognized.')
     return model
 
 def initialize_torchvision_model(name, d_out, **kwargs):
@@ -171,11 +171,11 @@ def initialize_fasterrcnn_model(config, d_out):
 
     # load a model pre-trained pre-trained on COCO
     model = fasterrcnn_resnet50_fpn(
-        pretrained=config.model_kwargs["pretrained_model"],
-        pretrained_backbone=config.model_kwargs["pretrained_backbone"],
+        pretrained=config.get('model_kwargs')["pretrained_model"],
+        pretrained_backbone=config.get('model_kwargs')["pretrained_backbone"],
         num_classes=d_out,
-        min_size=config.model_kwargs["min_size"],
-        max_size=config.model_kwargs["max_size"]
-        )
+        min_size=config.get('model_kwargs')["min_size"],
+        max_size=config.get('model_kwargs')["max_size"]
+    )
 
     return model

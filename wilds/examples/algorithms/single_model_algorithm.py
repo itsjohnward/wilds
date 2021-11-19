@@ -1,9 +1,9 @@
 import torch
-from algorithms.group_algorithm import GroupAlgorithm
-from scheduler import initialize_scheduler
-from optimizer import initialize_optimizer
+from .group_algorithm import GroupAlgorithm
+from ..scheduler import initialize_scheduler
+from ..optimizer import initialize_optimizer
 from torch.nn.utils import clip_grad_norm_
-from utils import move_to
+from ..utils import move_to
 
 class SingleModelAlgorithm(GroupAlgorithm):
     """
@@ -20,17 +20,17 @@ class SingleModelAlgorithm(GroupAlgorithm):
             self.metric = None
         # initialize models, optimizers, and schedulers
         self.optimizer = initialize_optimizer(config, model)
-        self.max_grad_norm = config.max_grad_norm
+        self.max_grad_norm = config.get('max_grad_norm')
         scheduler = initialize_scheduler(config, self.optimizer, n_train_steps)
         # initialize the module
         super().__init__(
-            device=config.device,
+            device=config.get('device'),
             grouper=grouper,
             logged_metrics=logged_metrics,
             logged_fields=['objective'],
             schedulers=[scheduler,],
-            scheduler_metric_names=[config.scheduler_metric_name,],
-            no_group_logging=config.no_group_logging,
+            scheduler_metric_names=[config.get('scheduler_metric_name'),],
+            no_group_logging=config.get('no_group_logging'),
         )
         self.model = model
 

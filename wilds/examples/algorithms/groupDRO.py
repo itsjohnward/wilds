@@ -1,6 +1,6 @@
 import torch
-from algorithms.single_model_algorithm import SingleModelAlgorithm
-from models.initializer import initialize_model
+from .single_model_algorithm import SingleModelAlgorithm
+from ..models.initializer import initialize_model
 
 class GroupDRO(SingleModelAlgorithm):
     """
@@ -16,9 +16,9 @@ class GroupDRO(SingleModelAlgorithm):
     """
     def __init__(self, config, d_out, grouper, loss, metric, n_train_steps, is_group_in_train):
         # check config
-        assert config.uniform_over_groups
+        assert config.get('uniform_over_groups')
         # initialize model
-        model = initialize_model(config, d_out).to(config.device)
+        model = initialize_model(config, d_out).to(config.get('device'))
         # initialize module
         super().__init__(
             config=config,
@@ -31,7 +31,7 @@ class GroupDRO(SingleModelAlgorithm):
         # additional logging
         self.logged_fields.append('group_weight')
         # step size
-        self.group_weights_step_size = config.group_dro_step_size
+        self.group_weights_step_size = config.get('group_dro_step_size')
         # initialize adversarial weights
         self.group_weights = torch.zeros(grouper.n_groups)
         self.group_weights[is_group_in_train] = 1

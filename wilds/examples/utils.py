@@ -166,12 +166,12 @@ def set_seed(seed):
     torch.backends.cudnn.deterministic = True
 
 def log_config(config, logger):
-    for name, val in vars(config).items():
+    for name, val in config.items():
         logger.write(f'{name.replace("_"," ").capitalize()}: {val}\n')
     logger.write('\n')
 
 def initialize_wandb(config):
-    name = config.dataset + '_' + config.algorithm + '_' + config.log_dir
+    name = config.get('dataset') + '_' + config.get('algorithm') + '_' + config.get('log_dir')
     wandb.init(name=name,
                project=f"wilds")
     wandb.config.update(config)
@@ -189,9 +189,9 @@ def save_pred(y_pred, path_prefix):
 
 def get_replicate_str(dataset, config):
     if dataset['dataset'].dataset_name == 'poverty':
-        replicate_str = f"fold:{config.dataset_kwargs['fold']}"
+        replicate_str = f"fold:{config.get('dataset_kwargs').get('fold')}"
     else:
-        replicate_str = f"seed:{config.seed}"
+        replicate_str = f"seed:{config.get('seed')}"
     return replicate_str
 
 def get_pred_prefix(dataset, config):
@@ -199,7 +199,7 @@ def get_pred_prefix(dataset, config):
     split = dataset['split']
     replicate_str = get_replicate_str(dataset, config)
     prefix = os.path.join(
-        config.log_dir,
+        config.get('log_dir'),
         f"{dataset_name}_split:{split}_{replicate_str}_")
     return prefix
 
@@ -207,7 +207,7 @@ def get_model_prefix(dataset, config):
     dataset_name = dataset['dataset'].dataset_name
     replicate_str = get_replicate_str(dataset, config)
     prefix = os.path.join(
-        config.log_dir,
+        config.get('log_dir'),
         f"{dataset_name}_{replicate_str}_")
     return prefix
 

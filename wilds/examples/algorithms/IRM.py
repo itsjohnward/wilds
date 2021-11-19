@@ -1,10 +1,10 @@
 import torch
-from models.initializer import initialize_model
-from algorithms.single_model_algorithm import SingleModelAlgorithm
+from ..models.initializer import initialize_model
+from .single_model_algorithm import SingleModelAlgorithm
 from wilds.common.utils import split_into_groups
 import torch.autograd as autograd
 from wilds.common.metrics.metric import ElementwiseMetric, MultiTaskMetric
-from optimizer import initialize_optimizer
+from ..optimizer import initialize_optimizer
 
 class IRM(SingleModelAlgorithm):
     """
@@ -28,11 +28,11 @@ class IRM(SingleModelAlgorithm):
             - irm_penalty_anneal_iters
         """
         # check config
-        assert config.train_loader == 'group'
-        assert config.uniform_over_groups
-        assert config.distinct_groups
+        assert config.get('train_loader') == 'group'
+        assert config.get('uniform_over_groups')
+        assert config.get('distinct_groups')
         # initialize model
-        model = initialize_model(config, d_out).to(config.device)
+        model = initialize_model(config, d_out).to(config.get('device'))
         # initialize the module
         super().__init__(
             config=config,
@@ -46,8 +46,8 @@ class IRM(SingleModelAlgorithm):
         # additional logging
         self.logged_fields.append('penalty')
         # set IRM-specific variables
-        self.irm_lambda = config.irm_lambda
-        self.irm_penalty_anneal_iters = config.irm_penalty_anneal_iters
+        self.irm_lambda = config.get('irm_lambda')
+        self.irm_penalty_anneal_iters = config.get('irm_penalty_anneal_iters')
         self.scale = torch.tensor(1.).to(self.device).requires_grad_()
         self.update_count = 0
         self.config = config # Need to store config for IRM because we need to re-init optimizer

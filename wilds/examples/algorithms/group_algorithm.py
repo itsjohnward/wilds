@@ -1,8 +1,8 @@
 import torch, time
 import numpy as np
-from algorithms.algorithm import Algorithm
-from utils import update_average
-from scheduler import step_scheduler
+from .algorithm import Algorithm
+from ..utils import update_average
+from ..scheduler import step_scheduler
 from wilds.common.utils import get_counts, numel
 
 class GroupAlgorithm(Algorithm):
